@@ -4,5 +4,8 @@ pillow>=10.0.0
 opencv-python-headless>=4.8.0
 streamlit==1.39.0
 # Pin TensorFlow/Keras to avoid Keras 3 incompatibility with RetinaFace
-tensorflow==2.15.0
+tensorflow-cpu==2.15.0
 keras==2.15.0
+# Match TensorFlow 2.15 constraints to avoid build issues
+numpy==1.24.3
+h5py==3.9.0
