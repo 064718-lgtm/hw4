@@ -19,3 +19,5 @@
 - Assistant: 將 .python-version 更新為 3.10.14，requirements.txt 改用 tensorflow-cpu==2.15.0 並鎖定 numpy 1.24.3、h5py 3.9.0，README.md 同步說明。
 - User: Streamlit Cloud 安裝仍失敗（log 顯示 python3.13，找不到 tensorflow-cpu==2.15.0）
 - Assistant: 新增 runtime.txt 指定 python-3.10.14，README.md 補充使用 runtime.txt 強制版本，避免 3.13 無對應 TensorFlow 套件。
+- User: 還是有這個問題（安裝仍找不到 tensorflow-cpu==2.15.0）
+- Assistant: 新增 .streamlit/runtime.txt 也指定 python-3.10.14，README.md 同步，確保 Streamlit Cloud 讀到 Python 版本設定。

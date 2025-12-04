@@ -34,7 +34,7 @@ streamlit run streamlit_app.py
 - `opencv-python-headless` is used to avoid GUI dependencies on headless/Streamlit Cloud environments.
 - `tensorflow-cpu==2.15.0` and `keras==2.15.0` are pinned to avoid the Keras 3 incompatibility error that RetinaFace raises on Streamlit Cloud.
 - `numpy==1.24.3` / `h5py==3.9.0` are pinned to align with TensorFlow 2.15 wheels.
-- Streamlit Cloud: force Python 3.10.14 (a `runtime.txt` and `.python-version` are included) so TensorFlow 2.15 installs correctly; Python 3.13 will fail to build TensorFlow and cause installer errors.
+- Streamlit Cloud: force Python 3.10.14 (a `runtime.txt`, `.python-version`, and `.streamlit/runtime.txt` are included) so TensorFlow 2.15 installs correctly; Python 3.13 will fail to build TensorFlow and cause installer errors.
 
 ## Notes
 - The interface title/description follows the original Chinese wording via Unicode escapes inside `app.py` to keep the file ASCII-only.
