@@ -11,3 +11,5 @@
 - Assistant: 更新 requirements.txt 改用 opencv-python-headless 並在 README.md 註明，以解決 Streamlit Cloud 環境下的 cv2 匯入問題。
 - User: 那個報錯是在使用streamlit連接git去佈署到網路上時出現的
 - Assistant: 已確認錯誤來源於 Streamlit Cloud 部署，改用 opencv-python-headless 並建議重新部署以套用新依賴。
+- User: 部署後出現 ValueError（RetinaFace 對 Keras 3 不相容）
+- Assistant: 將 requirements.txt 鎖定 tensorflow==2.15.0、keras==2.15.0 以避開 Keras 3，並在 README.md 註記原因。

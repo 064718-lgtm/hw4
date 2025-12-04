@@ -3,3 +3,6 @@ gradio==4.42.0
 pillow>=10.0.0
 opencv-python-headless>=4.8.0
 streamlit==1.39.0
+# Pin TensorFlow/Keras to avoid Keras 3 incompatibility with RetinaFace
+tensorflow==2.15.0
+keras==2.15.0
