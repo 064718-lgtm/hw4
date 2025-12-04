@@ -17,6 +17,7 @@ Small project inspired by the notebook `和_AI_PK_看誰比較會認_IVE_成員.
   `yujin`, `wonyoung`, `gaeul`, `rei`, `liz`, `leeseo`.
 - Put several clear, front-facing photos for each member in their folder. (The app auto-creates empty folders on first run.)
 - To use a different root folder, set `PHOTO_FOLDER=/path/to/photos` before launching.
+- After adding photos, restart the app (or click reload in Streamlit) so the LBPH model retrains on the new data.
 
 ## Run the app (Gradio)
 ```bash
@@ -30,13 +31,10 @@ python app.py
 streamlit run streamlit_app.py
 ```
 - Opens a Streamlit UI; upload a photo and optionally select your guess.
-- DeepFace downloads public model weights automatically on first run; no tokens are required.
-- `opencv-python-headless` is used to avoid GUI dependencies on headless/Streamlit Cloud environments.
-- `tensorflow-cpu==2.15.0` and `keras==2.15.0` are pinned to avoid the Keras 3 incompatibility error that RetinaFace raises on Streamlit Cloud.
-- `numpy==1.24.3` / `h5py==3.9.0` are pinned to align with TensorFlow 2.15 wheels.
-- Streamlit Cloud: force Python 3.10.14 (a `runtime.txt`, `.python-version`, and `.streamlit/runtime.txt` are included) so TensorFlow 2.15 installs correctly; Python 3.13 will fail to build TensorFlow and cause installer errors.
+- Uses OpenCV LBPH (no TensorFlow/Keras), so it works on Streamlit Cloud with Python 3.13+.
+- `opencv-contrib-python-headless` is used to avoid GUI dependencies on headless environments.
 
 ## Notes
-- The interface title/description follows the original Chinese wording via Unicode escapes inside `app.py` to keep the file ASCII-only.
-- DeepFace will search the local photo database; if no face is found, it returns a friendly message instead of failing.
+- The interface title/description follows the original Chinese wording via Unicode escapes inside `app.py` / `streamlit_app.py` to keep the files ASCII-only.
+- The backend now uses OpenCV LBPH; restart/reload after adding new photos to rebuild the recognizer.
 - The reference notebook is saved as `demo.ipynb` for traceability.

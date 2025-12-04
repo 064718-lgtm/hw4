@@ -21,3 +21,5 @@
 - Assistant: 新增 runtime.txt 指定 python-3.10.14，README.md 補充使用 runtime.txt 強制版本，避免 3.13 無對應 TensorFlow 套件。
 - User: 還是有這個問題（安裝仍找不到 tensorflow-cpu==2.15.0）
 - Assistant: 新增 .streamlit/runtime.txt 也指定 python-3.10.14，README.md 同步，確保 Streamlit Cloud 讀到 Python 版本設定。
+- User: 多次部署後仍因 python3.13 找不到 tensorflow-cpu==2.15.0 而失敗，提供完整安裝 log
+- Assistant: 移除 DeepFace/TensorFlow 依賴，改用 OpenCV LBPH；新增 face_backend.py，重寫 app.py、streamlit_app.py 使用 LBPH；requirements 改為 opencv-contrib-python-headless + numpy；README 更新；旨在於 Python 3.13 亦可安裝。

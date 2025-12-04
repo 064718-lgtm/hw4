@@ -1,65 +1,29 @@
 """
-Streamlit version of the IVE face PK app, inspired by the reference notebook:
-https://github.com/yenlung/AI-Demo/blob/master/%E3%80%90Demo03%E3%80%91%E5%92%8C_AI_PK_%E7%9C%8B%E8%AA%B0%E6%AF%94%E8%BC%83%E6%9C%83%E8%AA%8D_IVE_%E6%88%90%E5%93%A1.ipynb
-
-DeepFace downloads public model weights over the network when first run; no auth
-tokens are needed.
+Streamlit version of the IVE face PK app, now using OpenCV LBPH instead of
+TensorFlow/DeepFace to avoid Python 3.13 wheel issues on Streamlit Cloud.
 """
 from __future__ import annotations
 
-import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import streamlit as st
-from deepface import DeepFace
 
-# Folder name keys are kept in ASCII to avoid path issues on different OSes.
-MEMBERS_EN: List[str] = ["yujin", "wonyoung", "gaeul", "rei", "liz", "leeseo"]
-
-# Display names (Unicode escaped to keep file ASCII).
-MEMBERS_ZH: List[str] = [
-    "\u516a\u771f\u110b\u1172\u110c\u1175\u11ab",
-    "\u54e1\u745b\u110b\u116f\u11ab\u110b\u1167\u11bc",
-    "\u79cb\u5929\u1100\u1161\u110b\u1173\u11af",
-    "Liz\u1105\u1175\u110c\u1173",
-    "Rei\u1105\u1166\u110b\u1175",
-    "\u674e\u745e\u110b\u1175\u1109\u1165",
-]
-
-TITLE = "IVE \u6210\u54e1 PK \u6230"
-DESCRIPTION = "\u548c AI PK IVE \u6210\u54e1\u7684\u8fa8\u8b58\u80fd\u529b"
-
-PHOTO_FOLDER = Path(os.environ.get("PHOTO_FOLDER", "photos")).resolve()
-
-MEMBER_NAME: Dict[str, str] = dict(zip(MEMBERS_EN, MEMBERS_ZH))
-DISPLAY_TO_KEY: Dict[str, str] = {v: k for k, v in MEMBER_NAME.items()}
+from face_backend import (
+    DESCRIPTION,
+    DISPLAY_TO_KEY,
+    MEMBERS_ZH,
+    MEMBER_NAME,
+    TITLE,
+    ensure_dataset_dirs,
+    predict_member,
+    train_recognizer,
+)
 
 
-def ensure_dataset_dirs() -> None:
-    """Create one folder per member to store reference photos."""
-    for member in MEMBERS_EN:
-        (PHOTO_FOLDER / member).mkdir(parents=True, exist_ok=True)
-
-
-def recognize_member(img_path: str) -> str:
-    """
-    Run DeepFace search against the local photo folder.
-
-    Returns the matched member key or an empty string if no match is found.
-    """
-    try:
-        df_list = DeepFace.find(img_path, db_path=str(PHOTO_FOLDER), enforce_detection=False)
-        if not df_list:
-            return ""
-        df = df_list[0]
-        if df.empty:
-            return ""
-        best_match = Path(df.identity.iloc[0])
-        return best_match.parent.name
-    except Exception as exc:  # DeepFace raises many broad exceptions internally
-        st.warning(f"\u8fa8\u8b58\u904e\u7a0b\u767c\u751f\u932f\u8aa4\uff1a{exc}")
-        return ""
+@st.cache_resource
+def load_model():
+    return train_recognizer()
 
 
 def describe_result(predicted_key: str, user_guess: Optional[str]) -> str:
@@ -84,8 +48,15 @@ def main() -> None:
     st.info(
         "\u5148\u5728 photos/<\u6210\u54e1\u82f1\u6587\u540d>/ \u653e\u5165\u8a18\u9304\u7167\u7247\uff08\u4e0d\u540c\u89d2\u5ea6\u3001\u5149\u7dda\uff09\u3002\n"
         "PHOTO_FOLDER \u74b0\u5883\u8b8a\u6578\u53ef\u4ee5\u6539\u8b8a\u8cc7\u6599\u593e\u4f4d\u7f6e\u3002\n"
-        "\u7b2c\u4e00\u6b21\u57f7\u884c\u6642 DeepFace \u6703\u81ea\u52d5\u4e0b\u8f09\u5fc5\u8981\u7684\u6a21\u578b\uff0c\u7121\u9700 token\u3002"
+        "OpenCV LBPH \u4e0d\u4f9d\u8cf4 TensorFlow/\u6d3e\u751f\u78c1\u78bc\u6a5f\u5668\uff0c\u9069\u7528\u65bc Streamlit Cloud Python 3.13\u3002"
     )
+
+    recognizer, id_to_member = load_model()
+
+    if st.button("\u91cd\u65b0\u8f09\u5165\u8cc7\u6599\u96c6 / Reload dataset"):
+        load_model.clear()
+        recognizer, id_to_member = load_model()
+        st.toast("\u5df2\u91cd\u8f09\u8cc7\u6599\u96c6", icon="✅")
 
     uploaded = st.file_uploader("\u4e0a\u50b3\u4f60\u8981 PK \u7684\u7167\u7247 (jpg/png)", type=["jpg", "jpeg", "png"])
     guess = st.selectbox("\u9078\u64c7\u4f60\u7684\u731c\u6e2c (可空)", [""] + MEMBERS_ZH)
@@ -95,7 +66,7 @@ def main() -> None:
         img_path.write_bytes(uploaded.getbuffer())
 
         with st.spinner("\u8655\u7406\u4e2d..."):
-            predicted_key = recognize_member(str(img_path))
+            predicted_key = predict_member(str(img_path), recognizer, id_to_member)
         st.success(describe_result(predicted_key, guess or None))
 
         st.image(str(img_path), caption="Uploaded")
