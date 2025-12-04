@@ -7,3 +7,7 @@
 - Assistant: 新增 Streamlit 版本（streamlit_app.py），更新 requirements.txt 加入 streamlit，並於 README.md 補充 Streamlit 部署方式與模型免 token 說明。
 - User: 完整的對話紀錄都要進行儲存，另外請幫我git push到"https://github.com/064718-lgtm/hw4.git"
 - Assistant: 已更新 GPT_ChatRecord.md，初始化 Git 專案，提交並推送 main 分支到 https://github.com/064718-lgtm/hw4.git。
+- User: ImportError: This app has encountered an error... (DeepFace import leads to cv2 ImportError on Streamlit Cloud)
+- Assistant: 更新 requirements.txt 改用 opencv-python-headless 並在 README.md 註明，以解決 Streamlit Cloud 環境下的 cv2 匯入問題。
+- User: 那個報錯是在使用streamlit連接git去佈署到網路上時出現的
+- Assistant: 已確認錯誤來源於 Streamlit Cloud 部署，改用 opencv-python-headless 並建議重新部署以套用新依賴。

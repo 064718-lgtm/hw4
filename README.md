@@ -31,6 +31,7 @@ streamlit run streamlit_app.py
 ```
 - Opens a Streamlit UI; upload a photo and optionally select your guess.
 - DeepFace downloads public model weights automatically on first run; no tokens are required.
+- `opencv-python-headless` is used to avoid GUI dependencies on headless/Streamlit Cloud environments.
 
 ## Notes
 - The interface title/description follows the original Chinese wording via Unicode escapes inside `app.py` to keep the file ASCII-only.
