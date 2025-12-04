@@ -1,0 +1,5 @@
+deepface==0.0.93
+gradio==4.42.0
+pillow>=10.0.0
+opencv-python>=4.8.0
+streamlit==1.39.0
