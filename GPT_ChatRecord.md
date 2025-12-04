@@ -13,3 +13,5 @@
 - Assistant: 已確認錯誤來源於 Streamlit Cloud 部署，改用 opencv-python-headless 並建議重新部署以套用新依賴。
 - User: 部署後出現 ValueError（RetinaFace 對 Keras 3 不相容）
 - Assistant: 將 requirements.txt 鎖定 tensorflow==2.15.0、keras==2.15.0 以避開 Keras 3，並在 README.md 註記原因。
+- User: 部署時安裝 requirements 失敗（installer returned non-zero exit code）
+- Assistant: 新增 .python-version 指定 Python 3.10 並在 README.md 註明 Streamlit Cloud 需使用 3.10 才能安裝 TensorFlow 2.15。
