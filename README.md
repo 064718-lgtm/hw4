@@ -17,6 +17,7 @@ Minimal Streamlit app that generates images with Hugging Face `stabilityai/sd-tu
 - Model: `stabilityai/sd-turbo` via `AutoPipelineForText2Image`.
 - Optimized for very low inference steps (1–4) and works well with guidance scale near 0–1.
 - Resolution fixed at 512x512 to stay within Streamlit Cloud CPU/RAM limits.
+- Torch is pinned to `2.5.1`, the latest available on Streamlit Cloud at time of writing, to avoid install errors.
 
 ## Files
 - `app.py` — Streamlit UI and generation logic.

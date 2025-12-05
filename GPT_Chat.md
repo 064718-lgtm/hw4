@@ -10,3 +10,7 @@
 ## 2025-12-05 11:48:05
 - User: 請幫我 git push到"https://github.com/064718-lgtm/hw4.git"
 - Assistant: 已將新增的 Streamlit 專案變更提交並推送到 `main` 分支（遠端 origin：https://github.com/064718-lgtm/hw4.git）。
+
+## 2025-12-05 11:53:30
+- User: 安裝依賴時，`torch==2.2.1` 找不到可用版本；請修正後再推送。
+- Assistant: 更新 `requirements.txt` 將 Torch 改為 `2.5.1`（目前 Streamlit Cloud 可取得），並鎖定 `diffusers==0.29.2`、`transformers==4.44.2` 以確保相容。
