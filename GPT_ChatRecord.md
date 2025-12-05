@@ -26,3 +26,5 @@
 - User: 我要佈署在streamlit cloud，需要避免先在 photos/<成員英文名>/ 放入記錄照片（不同角度、光線）。 PHOTO_FOLDER 環境變數可以改變資料夾位置。
 - User: 我要佈署在streamlit cloud，所以不希望要上傳整個資料集
 - Assistant: 更新 Streamlit UI，允許上傳包含 photos/<成員>/ 的 ZIP 並即時訓練，無需將資料集放入 repo；README 補充 ZIP 上傳流程。
+- User: 要避免「尚未找到任何參考照片」訊息，資料集用預設即可，若需先上傳到 GitHub 請直接處理
+- Assistant: 在無資料時自動產生各成員的佔位圖片以便可直接運行；若要準確結果仍需上傳實際照片。README 註記。

@@ -110,12 +110,9 @@ def main() -> None:
         img_path = Path("temp_upload.jpg")
         img_path.write_bytes(uploaded.getbuffer())
 
-        if recognizer is None:
-            st.error("\u5c1a\u672a\u627e\u5230\u4efb\u4f55\u53c3\u8003\u7167\u7247\uff0c\u8acb\u5148\u532f\u5165 ZIP \u6216\u5efa\u7acb photos/<\u6210\u54e1\u540d>/ \u653e\u4e0a\u7167\u7247\u3002")
-        else:
-            with st.spinner("\u8655\u7406\u4e2d..."):
-                predicted_key = predict_member(str(img_path), recognizer, id_to_member)
-            st.success(describe_result(predicted_key, guess or None))
+        with st.spinner("\u8655\u7406\u4e2d..."):
+            predicted_key = predict_member(str(img_path), recognizer, id_to_member)
+        st.success(describe_result(predicted_key, guess or None))
 
         st.image(str(img_path), caption="Uploaded")
     else:

@@ -35,6 +35,7 @@ streamlit run streamlit_app.py
 - Uses OpenCV LBPH (no TensorFlow/Keras), so it works on Streamlit Cloud with Python 3.13+.
 - `opencv-contrib-python-headless` is used to avoid GUI dependencies on headless environments.
 - Provides a ZIP uploader to load reference photos at runtime; you don’t need to package the dataset in the repo.
+- If no photos are present, the app auto-generates simple placeholder images per member so it can still run; replace them with real photos for meaningful results.
 
 ## Notes
 - The interface title/description follows the original Chinese wording via Unicode escapes inside `app.py` / `streamlit_app.py` to keep the files ASCII-only.

@@ -43,6 +43,27 @@ def ensure_dataset_dirs(photo_root: Path = PHOTO_FOLDER) -> None:
         (photo_root / member).mkdir(parents=True, exist_ok=True)
 
 
+def _generate_placeholder(photo_root: Path) -> None:
+    """Generate a simple placeholder image per member so the model can train without uploaded data."""
+    ensure_dataset_dirs(photo_root)
+    for member in MEMBERS_EN:
+        target = photo_root / member / "placeholder.png"
+        if target.exists():
+            continue
+        img = np.full((200, 200, 3), 255, dtype=np.uint8)
+        cv2.putText(
+            img,
+            member[:6],
+            (10, 110),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (0, 0, 0),
+            2,
+            cv2.LINE_AA,
+        )
+        cv2.imwrite(str(target), img)
+
+
 def _load_image_as_gray(path: Path) -> Optional[np.ndarray]:
     img = cv2.imread(str(path))
     if img is None:
@@ -74,6 +95,9 @@ def load_training_data(photo_root: Path = PHOTO_FOLDER) -> Tuple[List[np.ndarray
 
 def train_recognizer(photo_root: Path = PHOTO_FOLDER) -> Tuple[Optional[cv2.face_LBPHFaceRecognizer], Dict[int, str]]:
     images, labels, id_to_member = load_training_data(photo_root)
+    if not images:
+        _generate_placeholder(photo_root)
+        images, labels, id_to_member = load_training_data(photo_root)
     if not images:
         return None, id_to_member
     recognizer = cv2.face.LBPHFaceRecognizer_create()
