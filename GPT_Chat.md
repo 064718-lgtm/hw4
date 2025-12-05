@@ -6,4 +6,4 @@
 
 ## Entry 2
 - User: 幫我git push 到"https://github.com/064718-lgtm/hw4.git"
-- Assistant: Pending actions—prepare commit of new app/log files and push to origin main.
+- Assistant: Committed new SD-Turbo Streamlit app files (`app.py`, `requirements.txt`, `README.md`, `GPT_Chat.md`) and pushed to origin `main` at https://github.com/064718-lgtm/hw4.git. Unstaged local deletions from prior work remain untouched.
