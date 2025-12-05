@@ -28,6 +28,7 @@ streamlit run app.py
 - Default settings: 512x512 resolution, 1-8 steps (4 recommended), guidance scale 0-1 recommended
 - Supports optional seed for reproducibility
 - Attention slicing is enabled to reduce memory on CPU; turbo is trained for very low step counts, so it stays reasonably fast on Streamlit Cloud
+- Torch is pinned to 2.5.1 to stay compatible with Streamlit Cloud’s current Python (3.10–3.12).
 
 ## Troubleshooting
 

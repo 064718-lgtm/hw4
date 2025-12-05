@@ -15,3 +15,15 @@
 ## Entry 4
 - User: git push 到"https://github.com/064718-lgtm/hw4.git"
 - Assistant: Committed chat log update (`Update chat log entry 4`, hash 53f28f5) and pushed to origin `main` at https://github.com/064718-lgtm/hw4.git. Unrelated deletions remain unstaged.
+
+## Entry 5
+- User: Collecting streamlit==1.38.0 (from -r /mount/src/hw4/requirements.txt (line 1))
+
+  Downloading streamlit-1.38.0-py2.py3-none-any.whl.metadata (8.5 kB)
+
+  ERROR: Ignored the following versions that require a different python version: 0.55.2 Requires-Python <3.5
+
+  ERROR: Could not find a version that satisfies the requirement torch==2.2.1 (from versions: 2.5.0, 2.5.1, 2.6.0, 2.7.0, 2.7.1, 2.8.0, 2.9.0, 2.9.1)
+
+  ERROR: No matching distribution found for torch==2.2.1
+- Assistant: Updated `requirements.txt` to torch 2.5.1 (compatible with Streamlit Cloud’s Python) and noted this in README. Will commit and push.
