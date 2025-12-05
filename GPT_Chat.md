@@ -27,3 +27,7 @@
 
   ERROR: No matching distribution found for torch==2.2.1
 - Assistant: Updated `requirements.txt` to torch 2.5.1 (compatible with Streamlit Cloud’s Python) and noted this in README. Will commit and push.
+
+## Entry 6
+- User: 請先將"https://github.com/064718-lgtm/hw4.git"清空再進行git push
+- Assistant: Will clear the repository contents while keeping this log, commit the deletions, and push to origin `main`.
