@@ -46,3 +46,7 @@
 ## 2025-12-05 13:50:00
 - User: 要求 Streamlit 介面補充中文說明，並新增包含 `example.png` 的範例頁面。
 - Assistant: 重新設計 `app.py`，加入中文導覽的生成頁籤與「範例說明」頁籤（顯示 example.png 和步驟解說）；更新 README 的中文 UI 說明。
+
+## 2025-12-05 13:55:57
+- User: 請在範例中標註主要提示詞為 "A cozy reading nook beside a window with soft morning light, watercolor style"，反向提示為 "低畫質, 模糊, noisy"，並使用更新後的 example.png。
+- Assistant: 更新範例頁籤文字，明確標示上述提示詞與反向提示；範例仍展示最新的 `example.png`。

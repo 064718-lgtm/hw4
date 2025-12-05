@@ -117,9 +117,9 @@ with tabs[1]:
     st.markdown(
         """
 **範例流程（Example Walkthrough）：**
-1. 在「生成圖片」頁籤輸入提示詞，例如：`一隻戴著紅色圍巾的柴犬，坐在咖啡店桌上，插畫風格，溫暖光線`。
-2. 反向提示可填：`低畫質, 模糊, 噪點` 以減少不想要的雜訊。
-3. 保持步數 4、引導 0.5，點擊「生成圖片」。
+1. 在「生成圖片」頁籤輸入提示詞：`A cozy reading nook beside a window with soft morning light, watercolor style`。
+2. 反向提示：`低畫質, 模糊, noisy` 以減少不想要的雜訊。
+3. 建議步數 4、引導 0.5，點擊「生成圖片」。
 4. 生成完成後可以直接下載 PNG。
 """
     )
