@@ -1,5 +1,8 @@
-streamlit==1.39.0
-gradio==4.42.0
-pillow>=10.0.0
-opencv-contrib-python-headless>=4.12.0.88
-numpy>=1.24.0
+streamlit==1.38.0
+torch==2.2.1
+diffusers==0.30.3
+transformers==4.45.2
+accelerate==0.34.2
+safetensors==0.4.5
+huggingface_hub==0.26.0
+Pillow==10.4.0

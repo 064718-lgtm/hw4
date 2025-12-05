@@ -1,66 +1,101 @@
-"""
-Gradio app inspired by the AI-Demo notebook, now using OpenCV LBPH instead of
-DeepFace/TensorFlow for compatibility with Python 3.13 (Streamlit Cloud).
-"""
-from __future__ import annotations
+from io import BytesIO
 
-import os
+import streamlit as st
+import torch
+from diffusers import AutoPipelineForText2Image, DPMSolverMultistepScheduler
 
-import gradio as gr
 
-from face_backend import (
-    DESCRIPTION,
-    DISPLAY_TO_KEY,
-    MEMBERS_ZH,
-    MEMBER_NAME,
-    TITLE,
-    ensure_dataset_dirs,
-    predict_member,
-    train_recognizer,
+st.set_page_config(page_title="SD-Turbo Image Generator", page_icon="🎨")
+torch.set_grad_enabled(False)
+
+
+@st.cache_resource(show_spinner="Loading the lightweight model...")
+def load_pipeline(model_id: str = "stabilityai/sd-turbo"):
+    """
+    Load and cache the SD-Turbo text-to-image pipeline.
+    Uses float16 on GPU for speed and float32 on CPU for compatibility.
+    """
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    torch_dtype = torch.float16 if device == "cuda" else torch.float32
+
+    pipe = AutoPipelineForText2Image.from_pretrained(
+        model_id,
+        torch_dtype=torch_dtype,
+        use_safetensors=True,
+    )
+    pipe.enable_attention_slicing()
+    pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+    pipe.to(device)
+    return pipe, device
+
+
+pipe, device = load_pipeline()
+
+st.title("SD-Turbo on Streamlit Cloud")
+st.caption(
+    "Lightweight image generation using diffusers with the open `stabilityai/sd-turbo` model. "
+    "Optimized for low step counts so it can run on CPU-only Streamlit Cloud."
 )
 
-
-def pk(img_path: str, guess_display: str, recognizer, id_to_member) -> str:
-    """Compare the AI prediction with the user's guess."""
-    predicted_key = predict_member(img_path, recognizer, id_to_member)
-    predicted_display = MEMBER_NAME.get(predicted_key, "")
-
-    if not predicted_display:
-        return "\u627e\u4e0d\u5230\u5339\u914d\u7d50\u679c\uff0c\u8acb\u78ba\u4fdd photos/ \u5167\u6709\u5404\u6210\u54e1\u7684\u91cf\u8db3\u7167\u7247\uff0c\u4e14\u7167\u7247\u4e2d\u6709\u6b63\u9762\u4eba\u81c9\u3002"
-
-    if guess_display:
-        if DISPLAY_TO_KEY.get(guess_display) == predicted_key:
-            return f"AI \u4e5f\u8a8d\u70ba\u662f {predicted_display}\uff0c\u4f60\u7b54\u5c0d\u4e86\uff01"
-        return f"AI \u8a8d\u70ba\u662f {predicted_display}\uff0c\u4f60\u7684\u7b54\u6848\u662f {guess_display}\u3002"
-
-    return f"AI \u8a8d\u70ba\u662f {predicted_display}\u3002"
-
-
-def build_interface(recognizer, id_to_member) -> gr.Interface:
-    instructions = (
-        "\u5148\u5728 photos/<\u6210\u54e1\u82f1\u6587\u540d>/ \u653e\u5165\u8a18\u9304\u7167\u7247\uff08\u4e0d\u540c\u89d2\u5ea6\u3001\u5149\u7dda\uff09\u3002\n"
-        "PHOTO_FOLDER \u74b0\u5883\u8b8a\u6578\u53ef\u4ee5\u6539\u8b8a\u8cc7\u6599\u593e\u4f4d\u7f6e\u3002"
-    )
-
-    return gr.Interface(
-        fn=lambda img_path, guess: pk(img_path, guess, recognizer, id_to_member),
-        inputs=[
-            gr.Image(label="\u4e0a\u50b3\u7167\u7247 / Upload", type="filepath"),
-            gr.Dropdown(MEMBERS_ZH, label="\u4f60\u7684\u731c\u6e2c\uff08\u9078\u586b\uff09"),
-        ],
-        outputs=gr.Text(label="\u7d50\u679c"),
-        title=TITLE,
-        description=f"{DESCRIPTION}\n\n{instructions}",
+with st.expander("How to get good results", expanded=False):
+    st.markdown(
+        "- Keep prompts concise but specific (style + subject + scene + mood).\n"
+        "- SD-Turbo prefers 1-4 inference steps; try 4 for better detail.\n"
+        "- Guidance scale works best around 0-1; higher values may oversaturate.\n"
+        "- Use 512x512 resolution for the best speed/quality trade-off."
     )
 
 
-def main() -> None:
-    ensure_dataset_dirs()
-    recognizer, id_to_member = train_recognizer()
-    share = os.environ.get("GRADIO_SHARE", "0") not in {"0", "false", "False"}
-    iface = build_interface(recognizer, id_to_member)
-    iface.launch(share=share, server_name="0.0.0.0")
+prompt = st.text_area(
+    "Prompt",
+    value="A cozy watercolor illustration of a small cabin in the mountains at sunrise, soft pastel colors",
+    height=100,
+)
+negative_prompt = st.text_area(
+    "Negative prompt (optional)",
+    value="blurry, distorted, low quality, text, watermark",
+    height=80,
+)
+
+col1, col2, col3 = st.columns(3)
+num_inference_steps = col1.slider("Inference steps", min_value=1, max_value=8, value=4, help="SD-Turbo was trained for 1-4 steps.")
+guidance_scale = col2.slider("Guidance scale", min_value=0.0, max_value=3.0, value=0.0, step=0.1, help="0-1 recommended for SD-Turbo.")
+use_seed = col3.checkbox("Set seed", value=False)
+seed_value = col3.number_input("Seed value", min_value=0, max_value=2_147_483_647, value=0, step=1, disabled=not use_seed)
 
 
-if __name__ == "__main__":
-    main()
+def make_generator(selected_device: str, enabled: bool, seed: int | None):
+    if not enabled:
+        return None
+    return torch.Generator(device=selected_device).manual_seed(int(seed))
+
+
+generate = st.button("Generate", type="primary", use_container_width=True, disabled=not prompt.strip())
+
+if generate:
+    with st.spinner("Generating... this may take ~10-40s on CPU"):
+        try:
+            generator = make_generator(device, use_seed, seed_value if use_seed else None)
+            result = pipe(
+                prompt=prompt,
+                negative_prompt=negative_prompt or None,
+                num_inference_steps=num_inference_steps,
+                guidance_scale=guidance_scale,
+                width=512,
+                height=512,
+                generator=generator,
+            )
+            image = result.images[0]
+            st.image(image, caption="Generated image", use_column_width=True)
+            buffer = BytesIO()
+            image.save(buffer, format="PNG")
+            buffer.seek(0)
+            st.download_button(
+                "Download PNG",
+                data=buffer.getvalue(),
+                file_name="sd_turbo_image.png",
+                mime="image/png",
+                use_container_width=True,
+            )
+        except Exception as exc:  # pragma: no cover - UI surface
+            st.error(f"Generation failed: {exc}")

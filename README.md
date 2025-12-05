@@ -1,43 +1,36 @@
-# IVE Face PK (DeepFace + Gradio)
+# SD-Turbo Streamlit Demo
 
-Small project inspired by the notebook `和_AI_PK_看誰比較會認_IVE_成員.ipynb`. It builds a local face-recognition quiz using [DeepFace](https://github.com/serengil/deepface) and [Gradio](https://www.gradio.app/) so you can compare your guess against the model.
+Simple Streamlit app for text-to-image generation inspired by the diffusers notebook in [yenlung/AI-Demo](https://github.com/yenlung/AI-Demo/blob/master/%E3%80%90Demo08%E3%80%91%E7%94%A8diffusers%E5%A5%97%E4%BB%B6%E7%94%9F%E6%88%90%E5%9C%96%E5%83%8F.ipynb). It uses the open `stabilityai/sd-turbo` model, which does not require a Hugging Face token and is optimized for low step counts so it can run on CPU-only Streamlit Cloud.
 
-## Setup
-1. Install Python 3.9+ (DeepFace/TensorFlow are heavy; a virtual env is recommended).
-2. Install dependencies:
-   ```bash
-   python -m venv .venv
-   .\\.venv\\Scripts\\activate
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
+## Quickstart (local)
 
-## Prepare the photo database
-- Reference images live under `photos/<member>/`. The default members are:
-  `yujin`, `wonyoung`, `gaeul`, `rei`, `liz`, `leeseo`.
-- Put several clear, front-facing photos for each member in their folder. (The app auto-creates empty folders on first run.)
-- To use a different root folder, set `PHOTO_FOLDER=/path/to/photos` before launching.
-- After adding photos, restart the app (or click reload in Streamlit) so the LBPH model retrains on the new data.
-- Streamlit Cloud 可直接使用內建佔位資料（不需上傳資料集）；若要更準確，再將實際照片放入 `photos/<member>/` 或指定的 `PHOTO_FOLDER`。
-
-## Run the app (Gradio)
-```bash
-python app.py
+1) Use Python 3.10-3.12 (matches Streamlit Cloud runtimes) and create a virtual environment (optional but recommended).
+2) Install dependencies:
 ```
-- Open the Gradio URL from the terminal. Upload a quiz photo, pick your guess, and see whether the AI agrees.
-- Set `GRADIO_SHARE=1` if you need a public share URL.
-
-## Run the app (Streamlit)
-```bash
-streamlit run streamlit_app.py
+pip install -r requirements.txt
 ```
-- Opens a Streamlit UI; upload a photo and optionally select your guess.
-- Uses OpenCV LBPH (no TensorFlow/Keras), so it works on Streamlit Cloud with Python 3.13+.
-- `opencv-contrib-python-headless` is used to avoid GUI dependencies on headless environments.
-- Designed to run without bundling a dataset; placeholders are auto-generated so you can test immediately. Add real photos later for meaningful predictions.
-- If no photos are present, the app auto-generates simple placeholder images per member so it can still run; replace them with real photos for meaningful results.
+3) Run the app:
+```
+streamlit run app.py
+```
+4) Open the URL shown in the terminal (defaults to http://localhost:8501).
 
-## Notes
-- The interface title/description follows the original Chinese wording via Unicode escapes inside `app.py` / `streamlit_app.py` to keep the files ASCII-only.
-- The backend now uses OpenCV LBPH; restart/reload after adding new photos to rebuild the recognizer.
-- The reference notebook is saved as `demo.ipynb` for traceability.
+## Deploy on Streamlit Cloud
+
+1) Push this folder to a GitHub repository.
+2) In Streamlit Community Cloud, create a new app and point it to `app.py`.
+3) Set the Python version to 3.10+ (the defaults are fine) and keep `requirements.txt` as-is.
+4) Optional: set the `Models` directory cache to persist between runs if you want faster cold starts.
+
+## App behavior
+
+- Model: `stabilityai/sd-turbo` via `diffusers.AutoPipelineForText2Image`
+- Default settings: 512x512 resolution, 1-8 steps (4 recommended), guidance scale 0-1 recommended
+- Supports optional seed for reproducibility
+- Attention slicing is enabled to reduce memory on CPU; turbo is trained for very low step counts, so it stays reasonably fast on Streamlit Cloud
+
+## Troubleshooting
+
+- If generation is slow, reduce steps to 1-2 and keep 512x512 resolution.
+- Out-of-memory on constrained machines: restart the app to clear the cache, or lower resolution (edit `width`/`height` in `app.py` if needed).
+- If your region has trouble downloading the model the first time, retry after a few minutes—the model is cached after the first successful load.
