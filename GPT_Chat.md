@@ -22,3 +22,7 @@
 ## 2025-12-05 13:27:35
 - User: 仍遇到 `tokenizers` 編譯錯誤（Python 3.13）。
 - Assistant: 將 `runtime.txt` 的版本明確調整為 Streamlit Cloud 官方支援的 `python-3.11.6`，並於 README 更新說明以確保使用 3.11 環境安裝預編譯 wheels。
+
+## 2025-12-05 13:33:51
+- User: Python 3.11.6 環境仍出現 `tokenizers` wheel 建置失敗。
+- Assistant: 在 `requirements.txt` 中將 `tokenizers` 明確鎖定為 `0.20.1`（提供 Python 3.11 的 manylinux 預編譯 wheel，避免 Rust 編譯），並更新 README 說明。
