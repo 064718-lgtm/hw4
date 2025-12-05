@@ -37,10 +37,10 @@ DEFAULT_CONFIDENCE_THRESHOLD = 80.0
 SUPPORTED_EXTS = {".jpg", ".jpeg", ".png", ".bmp"}
 
 
-def ensure_dataset_dirs() -> None:
-    """Create one folder per member to store reference photos."""
+def ensure_dataset_dirs(photo_root: Path = PHOTO_FOLDER) -> None:
+    """Create one folder per member to store reference photos (no-op if absent)."""
     for member in MEMBERS_EN:
-        (PHOTO_FOLDER / member).mkdir(parents=True, exist_ok=True)
+        (photo_root / member).mkdir(parents=True, exist_ok=True)
 
 
 def _load_image_as_gray(path: Path) -> Optional[np.ndarray]:
@@ -52,13 +52,13 @@ def _load_image_as_gray(path: Path) -> Optional[np.ndarray]:
     return resized
 
 
-def load_training_data() -> Tuple[List[np.ndarray], List[int], Dict[int, str]]:
+def load_training_data(photo_root: Path = PHOTO_FOLDER) -> Tuple[List[np.ndarray], List[int], Dict[int, str]]:
     images: List[np.ndarray] = []
     labels: List[int] = []
     id_to_member: Dict[int, str] = {}
     for idx, member in enumerate(MEMBERS_EN):
         id_to_member[idx] = member
-        folder = PHOTO_FOLDER / member
+        folder = photo_root / member
         if not folder.exists():
             continue
         for img_path in folder.iterdir():
@@ -72,8 +72,8 @@ def load_training_data() -> Tuple[List[np.ndarray], List[int], Dict[int, str]]:
     return images, labels, id_to_member
 
 
-def train_recognizer() -> Tuple[Optional[cv2.face_LBPHFaceRecognizer], Dict[int, str]]:
-    images, labels, id_to_member = load_training_data()
+def train_recognizer(photo_root: Path = PHOTO_FOLDER) -> Tuple[Optional[cv2.face_LBPHFaceRecognizer], Dict[int, str]]:
+    images, labels, id_to_member = load_training_data(photo_root)
     if not images:
         return None, id_to_member
     recognizer = cv2.face.LBPHFaceRecognizer_create()

@@ -18,6 +18,7 @@ Small project inspired by the notebook `和_AI_PK_看誰比較會認_IVE_成員.
 - Put several clear, front-facing photos for each member in their folder. (The app auto-creates empty folders on first run.)
 - To use a different root folder, set `PHOTO_FOLDER=/path/to/photos` before launching.
 - After adding photos, restart the app (or click reload in Streamlit) so the LBPH model retrains on the new data.
+- For Streamlit Cloud (to avoid bundling a dataset), upload a ZIP containing `photos/<member>/` folders at runtime; the app will extract and retrain in-session.
 
 ## Run the app (Gradio)
 ```bash
@@ -33,6 +34,7 @@ streamlit run streamlit_app.py
 - Opens a Streamlit UI; upload a photo and optionally select your guess.
 - Uses OpenCV LBPH (no TensorFlow/Keras), so it works on Streamlit Cloud with Python 3.13+.
 - `opencv-contrib-python-headless` is used to avoid GUI dependencies on headless environments.
+- Provides a ZIP uploader to load reference photos at runtime; you don’t need to package the dataset in the repo.
 
 ## Notes
 - The interface title/description follows the original Chinese wording via Unicode escapes inside `app.py` / `streamlit_app.py` to keep the files ASCII-only.

@@ -23,3 +23,6 @@
 - Assistant: 新增 .streamlit/runtime.txt 也指定 python-3.10.14，README.md 同步，確保 Streamlit Cloud 讀到 Python 版本設定。
 - User: 多次部署後仍因 python3.13 找不到 tensorflow-cpu==2.15.0 而失敗，提供完整安裝 log
 - Assistant: 移除 DeepFace/TensorFlow 依賴，改用 OpenCV LBPH；新增 face_backend.py，重寫 app.py、streamlit_app.py 使用 LBPH；requirements 改為 opencv-contrib-python-headless + numpy；README 更新；旨在於 Python 3.13 亦可安裝。
+- User: 我要佈署在streamlit cloud，需要避免先在 photos/<成員英文名>/ 放入記錄照片（不同角度、光線）。 PHOTO_FOLDER 環境變數可以改變資料夾位置。
+- User: 我要佈署在streamlit cloud，所以不希望要上傳整個資料集
+- Assistant: 更新 Streamlit UI，允許上傳包含 photos/<成員>/ 的 ZIP 並即時訓練，無需將資料集放入 repo；README 補充 ZIP 上傳流程。
