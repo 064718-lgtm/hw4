@@ -7,3 +7,11 @@
 ## Entry 2
 - User: 幫我git push 到"https://github.com/064718-lgtm/hw4.git"
 - Assistant: Committed new SD-Turbo Streamlit app files (`app.py`, `requirements.txt`, `README.md`, `GPT_Chat.md`) and pushed to origin `main` at https://github.com/064718-lgtm/hw4.git. Unstaged local deletions from prior work remain untouched.
+
+## Entry 3
+- User: 請在幫我重新佈署一次"https://github.com/064718-lgtm/hw4.git"
+- Assistant: I cannot trigger Streamlit Cloud deploys from here, but you can redeploy by opening Streamlit Community Cloud → Manage app for `064718-lgtm/hw4` → click “Rerun” or “Deploy” (ensure `main` branch and `app.py` entrypoint). Alternatively push a no-op commit to `main` to auto-redeploy.
+
+## Entry 4
+- User: git push 到"https://github.com/064718-lgtm/hw4.git"
+- Assistant: Will commit updated chat log and push to origin `main`; leaving unrelated deletions untouched.
