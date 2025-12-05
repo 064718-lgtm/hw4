@@ -2,6 +2,9 @@
 
 Minimal Streamlit app that generates images with Hugging Face `stabilityai/sd-turbo` (a lightweight Stable Diffusion Turbo model) using the diffusers library. No API tokens are required; everything runs locally/CPU on Streamlit Cloud.
 
+## Live Demo
+- Streamlit: https://43onov79zc27hey78w7tzk.streamlit.app/
+
 ## Quickstart (local)
 1. `python -m venv .venv && .\.venv\Scripts\activate`
 2. `pip install -r requirements.txt`
