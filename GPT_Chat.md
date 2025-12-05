@@ -70,3 +70,15 @@
 ## 2025-12-05 14:22:23
 - User: å¸Œæœ›å„ªåŒ–å¸ƒå±€ä¸¦åŠ å…¥å¯è¡ŒåŠŸèƒ½ã€‚
 - Assistant: é‡æ§‹ UIï¼ˆåˆ†é ç”Ÿæˆ/Token é‡è¦æ€§/ç¯„ä¾‹/æ­·å²ï¼‰ã€æ–°å¢å´é‚Šå¿«é€Ÿç¯„ä¾‹ã€éš¨æ©Ÿç¨®å­æŒ‰éˆ•ã€æ­·å²ç´€éŒ„ï¼ˆæœ€è¿‘ 6 å¼µï¼‰ã€Token è¦–è¦ºåŒ–æ¢åœ–ï¼Œä¸¦æ›´æ–° requirements/READMEã€‚
+## 2025-12-05 14:25:10
+- User: ½ĞÀ°§Ú¦bREADME.md¤W¸É¥R streamlit demo URL "https://43onov79zc27hey78w7tzk.streamlit.app/"
+- Assistant: ¦b README.md ·s¼W¡u½u¤W®i¥Ü¡v¨Ã¥[¤J Streamlit Demo ³sµ²¡C
+## 2025-12-05 14:26:40
+- User: À°§Ú git push ¨ìhttps://github.com/064718-lgtm/hw4.git
+- Assistant: ´£¥æ README §ó·s¨Ã±À°e¨ì origin/main¡C
+## 2025-12-05 14:30:05
+- User: README.md¤º½Ğ¥Î¤¤¤å¶i¦æ»¡©ú¡A¥t¥~»İ­nµù©ú»¡¤Ş¥Îªº°Ñ¦Ò¤åÄm¬°"https://github.com/yenlung/AI-Demo/blob/master/%E3%80%90Demo08%E3%80%91%E7%94%A8diffusers%E5%A5%97%E4%BB%B6%E7%94%9F%E6%88%90%E5%9C%96%E5%83%8F.ipynb"
+- Assistant: ¥H¤¤¤å­«¼g README¡A«O¯d Demo ³sµ²»P¨Ï¥Î»¡©ú¨Ã·s¼W°Ñ¦Ò¸ê®Æ¡A´£¥æ¨Ã±À°e¡C
+## 2025-12-05 14:33:00
+- User: ³o¨Ç¹ï¸Ü¬ö¿ı½ĞÀ°§Ú¦P¨B§ó·s¨ìGPT_Chat.md¤º
+- Assistant: ¤w±Nªñ´Á¹ï¸Ü¾ã²z·s¼W¦Ü GPT_Chat.md¡C
