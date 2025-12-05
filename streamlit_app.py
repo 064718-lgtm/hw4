@@ -45,11 +45,7 @@ def main() -> None:
     st.set_page_config(page_title=TITLE, page_icon=":camera:")
     st.title(TITLE)
     st.write(DESCRIPTION)
-    st.info(
-        "\u5148\u5728 photos/<\u6210\u54e1\u82f1\u6587\u540d>/ \u653e\u5165\u8a18\u9304\u7167\u7247\uff08\u4e0d\u540c\u89d2\u5ea6\u3001\u5149\u7dda\uff09\u3002\n"
-        "PHOTO_FOLDER \u74b0\u5883\u8b8a\u6578\u53ef\u4ee5\u6539\u8b8a\u8cc7\u6599\u593e\u4f4d\u7f6e\u3002\n"
-        "OpenCV LBPH \u4e0d\u4f9d\u8cf4 TensorFlow/\u6d3e\u751f\u78c1\u78bc\u6a5f\u5668\uff0c\u9069\u7528\u65bc Streamlit Cloud Python 3.13\u3002"
-    )
+    st.info("\u76f4\u63a5\u4e0a\u50b3\u7167\u7247\uff0c\u9078\u64c7\u731c\u6e2c\uff0c\u5373\u53ef\u9032\u884c PK \u63a8\u8ad6\u3002\u7121\u9700\u9810\u5148\u5e36\u4e0a\u8cc7\u6599\u96c6\u3002")
 
     recognizer, id_to_member = load_model()
 
