@@ -1,4 +1,6 @@
 import io
+import altair as alt
+import pandas as pd
 import streamlit as st
 import torch
 from diffusers import AutoPipelineForText2Image, DPMSolverMultistepScheduler
@@ -34,6 +36,21 @@ def generate_image(prompt: str, negative_prompt: str, steps: int, guidance: floa
     return result.images[0]
 
 
+def _clean_token(tok: str) -> str:
+    """Normalize tokens to avoid artifacts like '</w>' or control tokens."""
+    remove_exact = {"<|startoftext|>", "<|endoftext|>", "<|pad|>", "<s>", "</s>", "[PAD]"}
+    if tok in remove_exact:
+        return ""
+    tok = tok.replace("</w>", "")
+    tok = tok.replace("Ġ", " ")
+    tok = tok.replace("▁", " ")
+    tok = tok.strip()
+    # Filter out empty or punctuation-only artifacts
+    if tok == "":
+        return ""
+    return tok
+
+
 def analyze_prompt_tokens(prompt: str):
     """Approximate per-token importance via encoder embedding norms (avg across SDXL dual encoders when present)."""
     pipe = load_pipeline()
@@ -59,11 +76,12 @@ def analyze_prompt_tokens(prompt: str):
         for tok_str, norm, mask in zip(tokens, norms, mask_list):
             if mask == 0:
                 continue
-            if tok_str in ("<pad>", "</s>", "<|endoftext|>"):
+            tok_clean = _clean_token(tok_str)
+            if not tok_clean:
                 continue
             token_info.append(
                 {
-                    "token": tok_str,
+                    "token": tok_clean,
                     "norm": round(norm, 3),
                 }
             )
@@ -169,6 +187,18 @@ with tabs[0]:
                         token_rows = analyze_prompt_tokens(prompt.strip())
                         if token_rows:
                             st.dataframe(token_rows, use_container_width=True)
+                            df = pd.DataFrame(token_rows)
+                            chart = (
+                                alt.Chart(df.head(20))
+                                .mark_bar()
+                                .encode(
+                                    x=alt.X("avg_norm:Q", title="平均向量範數 (相對重要性)"),
+                                    y=alt.Y("token:N", sort="-x", title="Token"),
+                                    tooltip=["token", "avg_norm"],
+                                )
+                                .properties(height=400)
+                            )
+                            st.altair_chart(chart, use_container_width=True)
                         else:
                             st.info("無法取得 token 重要性（可能是模型或環境不支援）。")
                     except Exception as e:

@@ -58,3 +58,7 @@
 ## 2025-12-05 14:05:26
 - User: 要求生成後提供 prompt token 重要性/權重分析。
 - Assistant: 在生成流程後新增 token 分析表格（以 text encoder 嵌入向量 L2 範數近似相對重要性），並在 README 說明。
+
+## 2025-12-05 14:12:49
+- User: 希望避免 token 重要性表格的錯誤字符，並增加視覺化圖表。
+- Assistant: 清理 token 特殊字元（去除 </w>、控制 token），新增 top20 條狀圖視覺化（Altair），保留表格以便觀察。
