@@ -36,7 +36,7 @@ def generate_image(prompt: str, negative_prompt: str, steps: int, guidance: floa
 
 st.set_page_config(page_title="Diffusers 文生圖 (sd-turbo)", page_icon="🎨", layout="wide")
 st.title("Diffusers 文生圖 (sd-turbo)")
-st.caption("輕量化 Stable Diffusion Turbo：提供中文說明、範例圖片與快速生成介面。")
+st.caption("輕量化 Stable Diffusion Turbo：中文介面、範例圖片與快速生成。")
 
 tabs = st.tabs(["🖼️ 生成圖片", "📄 範例說明"])
 
@@ -117,11 +117,16 @@ with tabs[1]:
     st.markdown(
         """
 **範例流程（Example Walkthrough）：**
-1. 在「生成圖片」頁籤輸入提示詞：`A cozy reading nook beside a window with soft morning light, watercolor style`。
-2. 反向提示：`低畫質, 模糊, noisy` 以減少不想要的雜訊。
-3. 建議步數 4、引導 0.5，點擊「生成圖片」。
-4. 生成完成後可以直接下載 PNG。
+- 範例 1：
+  - 主要提示詞：`A cozy reading nook beside a window with soft morning light, watercolor style`
+  - 反向提示：`低畫質, 模糊, noisy`
+  - 建議步數：4，建議引導：0.5
+- 範例 2：
+  - 主要提示詞：`firework with rainbow`
+  - 反向提示：`低畫質，模糊，blur`
+  - 建議步數：4，建議引導：0.3
 """
     )
-    st.image("example.png", caption="example.png 範例輸出示意", use_column_width=True)
+    st.image("example.png", caption="example.png 範例 1 輸出示意", use_column_width=True)
+    st.image("example2.png", caption="example2.png 範例 2 輸出示意", use_column_width=True)
     st.info("首次啟動會下載模型，若等待較久屬正常現象。若需內容過濾，請啟用安全檢查或另行加上審核。")

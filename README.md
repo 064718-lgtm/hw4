@@ -25,7 +25,7 @@ Minimal Streamlit app that generates images with Hugging Face `stabilityai/sd-tu
 
 ## UI 說明
 - 主畫面提供中文說明，控制項包含提示詞、反向提示、步數、引導強度、隨機種子。
-- 「範例說明」頁籤展示 `example.png` 並給出一步步範例提示流程，方便快速上手。
+- 「範例說明」頁籤展示兩個範例：`example.png`（閱讀角落）與 `example2.png`（彩虹煙火），並標示對應的提示詞/反向提示與建議步數、引導強度。
 
 ## Files
 - `app.py` — Streamlit UI and generation logic.

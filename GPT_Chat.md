@@ -50,3 +50,7 @@
 ## 2025-12-05 13:55:57
 - User: 請在範例中標註主要提示詞為 "A cozy reading nook beside a window with soft morning light, watercolor style"，反向提示為 "低畫質, 模糊, noisy"，並使用更新後的 example.png。
 - Assistant: 更新範例頁籤文字，明確標示上述提示詞與反向提示；範例仍展示最新的 `example.png`。
+
+## 2025-12-05 14:02:47
+- User: 新增範例說明 (2) 使用 `example2.png`，提示詞 "firework with rainbow"，反向提示 "低畫質，模糊，blur"，步數 4，引導強度 0.3。
+- Assistant: 在範例頁籤增加第二個範例（提示詞/反向提示/步數/引導），並顯示 `example2.png`；README UI 說明同步更新。
