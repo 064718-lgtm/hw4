@@ -1,4 +1,5 @@
 import io
+import random
 import altair as alt
 import pandas as pd
 import streamlit as st
@@ -45,14 +46,13 @@ def _clean_token(tok: str) -> str:
     tok = tok.replace("Ġ", " ")
     tok = tok.replace("▁", " ")
     tok = tok.strip()
-    # Filter out empty or punctuation-only artifacts
     if tok == "":
         return ""
     return tok
 
 
 def analyze_prompt_tokens(prompt: str):
-    """Approximate per-token importance via encoder embedding norms (avg across SDXL dual encoders when present)."""
+    """Approximate per-token importance via encoder embedding norms (avg across encoders when present)."""
     pipe = load_pipeline()
     token_info = []
 
@@ -94,7 +94,6 @@ def analyze_prompt_tokens(prompt: str):
     except Exception:
         return []
 
-    # Aggregate by token string (average if duplicated due to dual encoders)
     aggregated = {}
     for item in token_info:
         aggregated.setdefault(item["token"], []).append(item["norm"])
@@ -105,41 +104,79 @@ def analyze_prompt_tokens(prompt: str):
     return rows
 
 
-st.set_page_config(page_title="Diffusers 文生圖 (sd-turbo)", page_icon="🎨", layout="wide")
+st.set_page_config(page_title="Diffusers 文生圖 (sd-turbo)", page_icon="🎨", layout="wide", initial_sidebar_state="expanded")
 st.title("Diffusers 文生圖 (sd-turbo)")
-st.caption("輕量化 Stable Diffusion Turbo：中文介面、範例圖片與快速生成。")
+st.caption("輕量化 Stable Diffusion Turbo：中文介面、範例、Prompt 重要性與下載。")
 
-tabs = st.tabs(["🖼️ 生成圖片", "📄 範例說明"])
+if "gallery" not in st.session_state:
+    st.session_state.gallery = []
+if "prompt_text" not in st.session_state:
+    st.session_state.prompt_text = "A cozy reading nook beside a window with soft morning light, watercolor style"
+if "negative_text" not in st.session_state:
+    st.session_state.negative_text = "低畫質, 模糊, noisy"
+if "steps_val" not in st.session_state:
+    st.session_state.steps_val = 4
+if "guidance_val" not in st.session_state:
+    st.session_state.guidance_val = 0.5
 
-with tabs[0]:
+preset_examples = {
+    "閱讀角落 (example.png)": {
+        "prompt": "A cozy reading nook beside a window with soft morning light, watercolor style",
+        "negative": "低畫質, 模糊, noisy",
+        "steps": 4,
+        "guidance": 0.5,
+    },
+    "彩虹煙火 (example2.png)": {
+        "prompt": "firework with rainbow",
+        "negative": "低畫質，模糊，blur",
+        "steps": 4,
+        "guidance": 0.3,
+    },
+}
+
+with st.sidebar:
+    st.header("操作指南")
     st.markdown(
         """
-**使用說明（中文）：**
-- 輸入想要生成的描述（Prompt），可用中文或英文。
-- 可填寫「反向提示」避免出現的元素，如「低畫質、模糊」。
-- sd-turbo 建議步數 1-4、Guidance 0-1，解析度固定 512x512 以適應 Streamlit Cloud CPU。
-- 首次啟動需下載模型，請稍候。
+- 填寫提示詞 / 反向提示，可用中文或英文。
+- 建議步數 1-4、引導 0-1；解析度固定 512x512。
+- 可輸入種子以重現結果；留空則隨機。
+- 首次啟動會下載模型，請稍候。
 """
     )
+    preset_choice = st.selectbox("快速載入範例", ["(不套用預設)"] + list(preset_examples.keys()))
+    if preset_choice != "(不套用預設)":
+        preset = preset_examples[preset_choice]
+        st.session_state.prompt_text = preset["prompt"]
+        st.session_state.negative_text = preset["negative"]
+        st.session_state.steps_val = preset["steps"]
+        st.session_state.guidance_val = preset["guidance"]
+        st.success(f"已套用預設：{preset_choice}")
 
+tabs = st.tabs(["🖼️ 生成與結果", "📊 Token 重要性", "📄 範例說明", "🗂️ 歷史紀錄"])
+
+with tabs[0]:
     with st.form("generator"):
+        st.markdown("**提示設定**")
         prompt = st.text_area(
             "主要提示詞（Prompt）",
-            value="A cozy reading nook beside a window with soft morning light, watercolor style",
-            height=100,
+            value=st.session_state.prompt_text,
+            height=120,
             help="描述你想要的畫面，可以使用中文或英文。",
         )
         negative_prompt = st.text_input(
-            "反向提示（避免出現）", placeholder="低畫質, 模糊, noisy", help="列出不希望出現的元素，逗號分隔。"
+            "反向提示（避免出現）",
+            value=st.session_state.negative_text,
+            help="列出不希望出現的元素，逗號分隔。",
         )
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
             steps = st.slider(
                 "生成步數（Inference steps）",
                 min_value=1,
                 max_value=8,
-                value=4,
+                value=st.session_state.steps_val,
                 help="sd-turbo 適合 1-4 步，步數越高不一定更好。",
             )
         with col2:
@@ -147,20 +184,31 @@ with tabs[0]:
                 "引導強度（Guidance scale）",
                 min_value=0.0,
                 max_value=5.0,
-                value=0.0,
+                value=st.session_state.guidance_val,
                 step=0.1,
                 help="建議 0-1；數值越大越貼合提示，但可能出現瑕疵。",
             )
         with col3:
             seed_text = st.text_input("隨機種子（可留空）", placeholder="留空則隨機", help="輸入整數以利重現，留空為隨機。")
+            if st.form_submit_button("隨機產生種子", use_container_width=True):
+                seed_text = str(random.randint(0, 2**31 - 1))
+                st.write(f"本次隨機種子：{seed_text}")
 
         generate_clicked = st.form_submit_button("生成圖片", use_container_width=True)
 
+    token_rows = []
+    generated_image = None
+    seed_value = None
+
     if generate_clicked:
+        st.session_state.prompt_text = prompt
+        st.session_state.negative_text = negative_prompt
+        st.session_state.steps_val = steps
+        st.session_state.guidance_val = guidance
+
         if not prompt.strip():
             st.warning("請輸入提示詞（Prompt）。")
         else:
-            seed_value = None
             if seed_text.strip():
                 try:
                     seed_value = int(seed_text.strip())
@@ -169,11 +217,11 @@ with tabs[0]:
             if seed_text.strip() == "" or seed_value is not None:
                 with st.spinner("生成中，請稍候..."):
                     try:
-                        image = generate_image(prompt.strip(), negative_prompt.strip(), steps, guidance, seed_value)
-                        st.image(image, caption="生成結果（sd-turbo）", use_column_width=True)
+                        generated_image = generate_image(prompt.strip(), negative_prompt.strip(), steps, guidance, seed_value)
+                        st.image(generated_image, caption=f"生成結果（sd-turbo） - 種子 {seed_value if seed_value is not None else '隨機'}", use_column_width=True)
 
                         buffer = io.BytesIO()
-                        image.save(buffer, format="PNG")
+                        generated_image.save(buffer, format="PNG")
                         st.download_button(
                             label="下載 PNG",
                             data=buffer.getvalue(),
@@ -182,29 +230,40 @@ with tabs[0]:
                             use_container_width=True,
                         )
 
-                        st.subheader("Prompt Token 重要性（嵌入向量強度近似）")
-                        st.caption("以下為 text encoder 輸出向量的 L2 範數平均值，僅作為相對重要性參考。")
+                        st.success("已完成生成，可切換到『Token 重要性』或『歷史紀錄』查看。")
                         token_rows = analyze_prompt_tokens(prompt.strip())
-                        if token_rows:
-                            st.dataframe(token_rows, use_container_width=True)
-                            df = pd.DataFrame(token_rows)
-                            chart = (
-                                alt.Chart(df.head(20))
-                                .mark_bar()
-                                .encode(
-                                    x=alt.X("avg_norm:Q", title="平均向量範數 (相對重要性)"),
-                                    y=alt.Y("token:N", sort="-x", title="Token"),
-                                    tooltip=["token", "avg_norm"],
-                                )
-                                .properties(height=400)
-                            )
-                            st.altair_chart(chart, use_container_width=True)
-                        else:
-                            st.info("無法取得 token 重要性（可能是模型或環境不支援）。")
+
+                        st.session_state.gallery = (
+                            [{"prompt": prompt.strip(), "negative": negative_prompt.strip(), "image_bytes": buffer.getvalue()}]
+                            + st.session_state.gallery
+                        )[:6]
                     except Exception as e:
                         st.error(f"生成失敗：{e}")
 
 with tabs[1]:
+    st.markdown("**Prompt Token 重要性（僅供參考）**")
+    st.caption("以 text encoder 輸出向量的 L2 範數近似相對重要性，已清理特殊字元避免亂碼。")
+
+    if not token_rows and st.session_state.get("gallery"):
+        st.info("請先在『生成與結果』頁籤完成一次生成以取得 Token 重要性。")
+    elif token_rows:
+        st.dataframe(token_rows, use_container_width=True)
+        df = pd.DataFrame(token_rows)
+        chart = (
+            alt.Chart(df.head(20))
+            .mark_bar()
+            .encode(
+                x=alt.X("avg_norm:Q", title="平均向量範數 (相對重要性)"),
+                y=alt.Y("token:N", sort="-x", title="Token"),
+                tooltip=["token", "avg_norm"],
+            )
+            .properties(height=400)
+        )
+        st.altair_chart(chart, use_container_width=True)
+    else:
+        st.info("目前尚無可用的 Token 重要性資料。")
+
+with tabs[2]:
     st.markdown(
         """
 **範例流程（Example Walkthrough）：**
@@ -221,3 +280,19 @@ with tabs[1]:
     st.image("example.png", caption="example.png 範例 1 輸出示意", use_column_width=True)
     st.image("example2.png", caption="example2.png 範例 2 輸出示意", use_column_width=True)
     st.info("首次啟動會下載模型，若等待較久屬正常現象。若需內容過濾，請啟用安全檢查或另行加上審核。")
+
+with tabs[3]:
+    st.markdown("**歷史紀錄（最近 6 張）**")
+    if not st.session_state.gallery:
+        st.info("尚無歷史紀錄，請先生成圖片。")
+    else:
+        cols = st.columns(3)
+        for idx, item in enumerate(st.session_state.gallery):
+            col = cols[idx % 3]
+            with col:
+                st.image(item["image_bytes"], caption=item["prompt"], use_column_width=True)
+                st.caption(f"反向提示：{item['negative'] or '(未填)'}")
+
+    if st.button("清除歷史紀錄", type="secondary"):
+        st.session_state.gallery = []
+        st.success("已清除歷史紀錄。")

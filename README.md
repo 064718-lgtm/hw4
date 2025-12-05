@@ -24,9 +24,11 @@ Minimal Streamlit app that generates images with Hugging Face `stabilityai/sd-tu
 - Torch is pinned to `2.5.1`, the latest available on Streamlit Cloud at time of writing, to avoid install errors.
 
 ## UI 說明
-- 主畫面提供中文說明，控制項包含提示詞、反向提示、步數、引導強度、隨機種子。
-- 「範例說明」頁籤展示兩個範例：`example.png`（閱讀角落）與 `example2.png`（彩虹煙火），並標示對應的提示詞/反向提示與建議步數、引導強度。
-- 生成後會顯示「Prompt Token 重要性」表格：以 text encoder 嵌入向量的 L2 範數近似各 token 的相對重要性，並提供條狀圖視覺化，已清理特殊字元避免干擾閱讀（僅供參考）。
+- 主頁籤「生成與結果」：中文說明，提示詞/反向提示、步數、引導強度、隨機種子（可隨機產生），並可下載 PNG。
+- 「Token 重要性」：生成後顯示表格與前 20 名條狀圖，基於 text encoder 向量範數，已清理特殊字元以避免亂碼。
+- 「範例說明」：展示 `example.png`（閱讀角落）與 `example2.png`（彩虹煙火），並列出對應提示詞、反向提示與建議步數/引導。
+- 「歷史紀錄」：保留最近 6 張結果，附上提示詞與反向提示，可一鍵清除。
+- 側邊欄提供快速套用範例設定與操作提醒。
 
 ## Files
 - `app.py` — Streamlit UI and generation logic.
