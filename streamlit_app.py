@@ -6,9 +6,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Optional
-import shutil
-import tempfile
-import zipfile
 
 import streamlit as st
 
@@ -17,7 +14,6 @@ from face_backend import (
     DISPLAY_TO_KEY,
     MEMBERS_ZH,
     MEMBER_NAME,
-    PHOTO_FOLDER,
     TITLE,
     ensure_dataset_dirs,
     predict_member,
@@ -26,21 +22,8 @@ from face_backend import (
 
 
 @st.cache_resource
-def load_model(photo_root_str: str):
-    return train_recognizer(Path(photo_root_str))
-
-
-def _extract_reference_zip(uploaded_file) -> Optional[Path]:
-    """Extract uploaded ZIP to a temp folder and return its path."""
-    if uploaded_file is None:
-        return None
-    tmp_dir = Path(tempfile.mkdtemp(prefix="photos_"))
-    zip_path = tmp_dir / "refs.zip"
-    zip_path.write_bytes(uploaded_file.getbuffer())
-    with zipfile.ZipFile(zip_path, "r") as zf:
-        zf.extractall(tmp_dir)
-    # Expect subfolders matching member names; user is responsible for structure.
-    return tmp_dir
+def load_model():
+    return train_recognizer()
 
 
 def describe_result(predicted_key: str, user_guess: Optional[str]) -> str:
@@ -57,12 +40,7 @@ def describe_result(predicted_key: str, user_guess: Optional[str]) -> str:
 
 
 def main() -> None:
-    # Track current photo root in session; default to PHOTO_FOLDER (env or ./photos)
-    if "photo_root" not in st.session_state:
-        st.session_state.photo_root = PHOTO_FOLDER
-    photo_root: Path = st.session_state.photo_root
-
-    ensure_dataset_dirs(photo_root)
+    ensure_dataset_dirs()
 
     st.set_page_config(page_title=TITLE, page_icon=":camera:")
     st.title(TITLE)
@@ -70,33 +48,10 @@ def main() -> None:
     st.info(
         "\u5148\u5728 photos/<\u6210\u54e1\u82f1\u6587\u540d>/ \u653e\u5165\u8a18\u9304\u7167\u7247\uff08\u4e0d\u540c\u89d2\u5ea6\u3001\u5149\u7dda\uff09\u3002\n"
         "PHOTO_FOLDER \u74b0\u5883\u8b8a\u6578\u53ef\u4ee5\u6539\u8b8a\u8cc7\u6599\u593e\u4f4d\u7f6e\u3002\n"
-        "\u4e5f\u53ef\u4ee5\u4e0a\u50b3 ZIP\uff08\u5167\u542b photos/<\u6210\u54e1\u82f1\u6587\u540d>/\u7167\u7247\uff09\u5373\u5831\u73fe\u5730\u8f49\u63db\uff0c\u7121\u9700\u5c0e\u5165\u6574\u500b\u8cc7\u6599\u96c6\u5230 repo\u3002\n"
         "OpenCV LBPH \u4e0d\u4f9d\u8cf4 TensorFlow/\u6d3e\u751f\u78c1\u78bc\u6a5f\u5668\uff0c\u9069\u7528\u65bc Streamlit Cloud Python 3.13\u3002"
     )
 
-    st.subheader("\u53c3\u8003\u7167\u7247\u7ba1\u7406")
-    ref_zip = st.file_uploader("\u4e0a\u50b3\u5305\u542b photos/<\u6210\u54e1\u82f1\u6587\u540d>/ \u7d44\u7e54\u7684 ZIP", type=["zip"])
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("\u532f\u5165 ZIP \u4e26\u91cd\u65b0\u8a13\u7df4"):
-            if ref_zip is None:
-                st.warning("\u8acb\u4e0a\u50b3 ZIP\u3002")
-            else:
-                if "tmp_photo_root" in st.session_state:
-                    shutil.rmtree(st.session_state.tmp_photo_root, ignore_errors=True)
-                tmp_root = _extract_reference_zip(ref_zip)
-                st.session_state.photo_root = tmp_root
-                st.session_state.tmp_photo_root = tmp_root
-                load_model.clear()
-                st.success("\u5df2\u532f\u5165 ZIP \u4e26\u91cd\u5efa\u6a21\u578b")
-    with col2:
-        if st.button("\u4f7f\u7528\u9810\u8a2d PHOTO_FOLDER \u91cd\u65b0\u8a13\u7df4"):
-            st.session_state.photo_root = PHOTO_FOLDER
-            load_model.clear()
-            st.success("\u5df2\u5207\u63db\u70ba\u9810\u8a2d\u8cc7\u6599\u593e")
-
-    photo_root = Path(st.session_state.photo_root)
-    recognizer, id_to_member = load_model(str(photo_root))
+    recognizer, id_to_member = load_model()
 
     if st.button("\u91cd\u65b0\u8f09\u5165\u8cc7\u6599\u96c6 / Reload dataset"):
         load_model.clear()
