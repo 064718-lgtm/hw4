@@ -34,3 +34,7 @@
 ## 2025-12-05 13:40:54
 - User: 仍有 `tokenizers` wheel 建置失敗。
 - Assistant: 進一步放寬相依並改用更舊、提供預編譯 wheel 的組合：`diffusers==0.27.2`、`transformers==4.37.2`、`tokenizers==0.15.2`，以避免 Rust 編譯並確保與 sd-turbo 相容；README 已更新。
+
+## 2025-12-05 13:42:35
+- User: 部署後遇到 `ImportError: cannot import name 'cached_download' from 'huggingface_hub'`。
+- Assistant: 在 `requirements.txt` 新增 `huggingface_hub==0.20.3`（仍包含 `cached_download`，與 diffusers 0.27.x 相容），並更新 README 說明。

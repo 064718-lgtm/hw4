@@ -6,6 +6,8 @@ diffusers==0.27.2
 transformers==4.37.2
 # Pin tokenizers to a prebuilt wheel version that matches the transformers constraint.
 tokenizers==0.15.2
+# Pin huggingface_hub to a version that still provides cached_download (needed by diffusers 0.27.2).
+huggingface_hub==0.20.3
 accelerate>=0.25.0
 safetensors>=0.4.2
 Pillow>=10.2.0
