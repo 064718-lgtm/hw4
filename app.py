@@ -34,6 +34,59 @@ def generate_image(prompt: str, negative_prompt: str, steps: int, guidance: floa
     return result.images[0]
 
 
+def analyze_prompt_tokens(prompt: str):
+    """Approximate per-token importance via encoder embedding norms (avg across SDXL dual encoders when present)."""
+    pipe = load_pipeline()
+    token_info = []
+
+    def collect(tok, enc):
+        inputs = tok(
+            prompt,
+            padding="max_length",
+            truncation=True,
+            max_length=tok.model_max_length,
+            return_tensors="pt",
+        )
+        input_ids = inputs.input_ids
+        attention_mask = inputs.attention_mask
+        with torch.no_grad():
+            outputs = enc(input_ids=input_ids, attention_mask=attention_mask)
+            hidden = outputs.last_hidden_state  # [1, seq, dim]
+            norms = hidden.norm(dim=-1).squeeze(0).cpu().tolist()
+
+        tokens = tok.convert_ids_to_tokens(input_ids[0])
+        mask_list = attention_mask[0].tolist()
+        for tok_str, norm, mask in zip(tokens, norms, mask_list):
+            if mask == 0:
+                continue
+            if tok_str in ("<pad>", "</s>", "<|endoftext|>"):
+                continue
+            token_info.append(
+                {
+                    "token": tok_str,
+                    "norm": round(norm, 3),
+                }
+            )
+
+    try:
+        if hasattr(pipe, "tokenizer") and hasattr(pipe, "text_encoder"):
+            collect(pipe.tokenizer, pipe.text_encoder)
+        if hasattr(pipe, "tokenizer_2") and hasattr(pipe, "text_encoder_2"):
+            collect(pipe.tokenizer_2, pipe.text_encoder_2)
+    except Exception:
+        return []
+
+    # Aggregate by token string (average if duplicated due to dual encoders)
+    aggregated = {}
+    for item in token_info:
+        aggregated.setdefault(item["token"], []).append(item["norm"])
+    rows = []
+    for tok, norms in aggregated.items():
+        rows.append({"token": tok, "avg_norm": round(sum(norms) / len(norms), 3)})
+    rows.sort(key=lambda x: x["avg_norm"], reverse=True)
+    return rows
+
+
 st.set_page_config(page_title="Diffusers 文生圖 (sd-turbo)", page_icon="🎨", layout="wide")
 st.title("Diffusers 文生圖 (sd-turbo)")
 st.caption("輕量化 Stable Diffusion Turbo：中文介面、範例圖片與快速生成。")
@@ -110,6 +163,14 @@ with tabs[0]:
                             mime="image/png",
                             use_container_width=True,
                         )
+
+                        st.subheader("Prompt Token 重要性（嵌入向量強度近似）")
+                        st.caption("以下為 text encoder 輸出向量的 L2 範數平均值，僅作為相對重要性參考。")
+                        token_rows = analyze_prompt_tokens(prompt.strip())
+                        if token_rows:
+                            st.dataframe(token_rows, use_container_width=True)
+                        else:
+                            st.info("無法取得 token 重要性（可能是模型或環境不支援）。")
                     except Exception as e:
                         st.error(f"生成失敗：{e}")
 

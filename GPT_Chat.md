@@ -54,3 +54,7 @@
 ## 2025-12-05 14:02:47
 - User: 新增範例說明 (2) 使用 `example2.png`，提示詞 "firework with rainbow"，反向提示 "低畫質，模糊，blur"，步數 4，引導強度 0.3。
 - Assistant: 在範例頁籤增加第二個範例（提示詞/反向提示/步數/引導），並顯示 `example2.png`；README UI 說明同步更新。
+
+## 2025-12-05 14:05:26
+- User: 要求生成後提供 prompt token 重要性/權重分析。
+- Assistant: 在生成流程後新增 token 分析表格（以 text encoder 嵌入向量 L2 範數近似相對重要性），並在 README 說明。
