@@ -14,3 +14,7 @@
 ## 2025-12-05 11:53:30
 - User: 安裝依賴時，`torch==2.2.1` 找不到可用版本；請修正後再推送。
 - Assistant: 更新 `requirements.txt` 將 Torch 改為 `2.5.1`（目前 Streamlit Cloud 可取得），並鎖定 `diffusers==0.29.2`、`transformers==4.44.2` 以確保相容。
+
+## 2025-12-05 13:21:51
+- User: Streamlit Cloud 安裝時 `tokenizers` 因 Python 3.13 建置失敗。
+- Assistant: 新增 `runtime.txt` 將 Python 版本固定為 3.11（Cloud 支援的預編譯 wheels 可用），並在 README 中說明。
