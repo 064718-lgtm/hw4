@@ -26,3 +26,7 @@
 ## 2025-12-05 13:33:51
 - User: Python 3.11.6 環境仍出現 `tokenizers` wheel 建置失敗。
 - Assistant: 在 `requirements.txt` 中將 `tokenizers` 明確鎖定為 `0.20.1`（提供 Python 3.11 的 manylinux 預編譯 wheel，避免 Rust 編譯），並更新 README 說明。
+
+## 2025-12-05 13:35:52
+- User: 安裝時出現 `transformers 4.44.2` 與 `tokenizers==0.20.1` 相依性衝突。
+- Assistant: 將 `transformers` 降至 `4.43.4` 並將 `tokenizers` 調整為 `0.19.1`（Python 3.11 的預編譯 wheel，符合 `<0.20` 約束），更新 README 說明。
