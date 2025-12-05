@@ -38,3 +38,11 @@
 ## 2025-12-05 13:42:35
 - User: 部署後遇到 `ImportError: cannot import name 'cached_download' from 'huggingface_hub'`。
 - Assistant: 在 `requirements.txt` 新增 `huggingface_hub==0.20.3`（仍包含 `cached_download`，與 diffusers 0.27.x 相容），並更新 README 說明。
+
+## 2025-12-05 13:45:42
+- User: 問安全檢查器停用的警告是否有影響。
+- Assistant: 回覆此為提醒：目前程式將 safety_checker 設為 None，生成結果未經過濾；若公開服務建議改用預設安全檢查或另行加上內容審核。
+
+## 2025-12-05 13:50:00
+- User: 要求 Streamlit 介面補充中文說明，並新增包含 `example.png` 的範例頁面。
+- Assistant: 重新設計 `app.py`，加入中文導覽的生成頁籤與「範例說明」頁籤（顯示 example.png 和步驟解說）；更新 README 的中文 UI 說明。

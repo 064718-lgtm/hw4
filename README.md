@@ -23,7 +23,13 @@ Minimal Streamlit app that generates images with Hugging Face `stabilityai/sd-tu
 - Resolution fixed at 512x512 to stay within Streamlit Cloud CPU/RAM limits.
 - Torch is pinned to `2.5.1`, the latest available on Streamlit Cloud at time of writing, to avoid install errors.
 
+## UI 說明
+- 主畫面提供中文說明，控制項包含提示詞、反向提示、步數、引導強度、隨機種子。
+- 「範例說明」頁籤展示 `example.png` 並給出一步步範例提示流程，方便快速上手。
+
 ## Files
 - `app.py` — Streamlit UI and generation logic.
 - `requirements.txt` — Python dependencies for Streamlit Cloud and local use.
+- `runtime.txt` — Pins Python version for Streamlit Cloud.
+- `example.png` — 範例圖片，顯示在「範例說明」頁面。
 - `GPT_Chat.md` — Log of assistant/user conversation per request.
