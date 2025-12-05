@@ -14,7 +14,7 @@ Minimal Streamlit app that generates images with Hugging Face `stabilityai/sd-tu
 4. First run will download model weights; subsequent runs are faster due to caching.
 
 > Note: A `runtime.txt` is included to pin Python 3.11 (currently `python-3.11.6`) on Streamlit Cloud so that prebuilt wheels are available for `tokenizers` and other dependencies.
-- `tokenizers` is pinned to `0.19.1` (prebuilt wheels for Python 3.11) and aligned with `transformers==4.43.4` to avoid dependency conflicts and Rust builds.
+- `transformers==4.37.2` with `tokenizers==0.15.2` (prebuilt wheels for Python 3.11) to avoid Rust builds on Streamlit Cloud; `diffusers==0.27.2` remains compatible with sd-turbo.
 
 ## Model notes
 - Model: `stabilityai/sd-turbo` via `AutoPipelineForText2Image`.

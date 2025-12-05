@@ -2,10 +2,10 @@ streamlit>=1.32.0
 # Torch 2.5.1 is available on Streamlit Cloud's Python runtime; pin to avoid install failures.
 torch==2.5.1
 # Keep diffusers/transformers moderate to reduce cold-start time while remaining compatible.
-diffusers==0.29.2
-transformers==4.43.4
-# Pin tokenizers to a version with prebuilt manylinux wheels for Python 3.11 to avoid Rust builds on Cloud; aligned with transformers constraint (<0.20).
-tokenizers==0.19.1
+diffusers==0.27.2
+transformers==4.37.2
+# Pin tokenizers to a prebuilt wheel version that matches the transformers constraint.
+tokenizers==0.15.2
 accelerate>=0.25.0
 safetensors>=0.4.2
 Pillow>=10.2.0

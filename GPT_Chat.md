@@ -30,3 +30,7 @@
 ## 2025-12-05 13:35:52
 - User: 安裝時出現 `transformers 4.44.2` 與 `tokenizers==0.20.1` 相依性衝突。
 - Assistant: 將 `transformers` 降至 `4.43.4` 並將 `tokenizers` 調整為 `0.19.1`（Python 3.11 的預編譯 wheel，符合 `<0.20` 約束），更新 README 說明。
+
+## 2025-12-05 13:40:54
+- User: 仍有 `tokenizers` wheel 建置失敗。
+- Assistant: 進一步放寬相依並改用更舊、提供預編譯 wheel 的組合：`diffusers==0.27.2`、`transformers==4.37.2`、`tokenizers==0.15.2`，以避免 Rust 編譯並確保與 sd-turbo 相容；README 已更新。
