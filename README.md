@@ -13,7 +13,7 @@ Minimal Streamlit app that generates images with Hugging Face `stabilityai/sd-tu
 3. Set **Main file path** to `app.py` and deploy (the default command `streamlit run app.py` is fine).
 4. First run will download model weights; subsequent runs are faster due to caching.
 
-> Note: A `runtime.txt` is included to pin Python 3.11 on Streamlit Cloud so that prebuilt wheels are available for `tokenizers` and other dependencies.
+> Note: A `runtime.txt` is included to pin Python 3.11 (currently `python-3.11.6`) on Streamlit Cloud so that prebuilt wheels are available for `tokenizers` and other dependencies.
 
 ## Model notes
 - Model: `stabilityai/sd-turbo` via `AutoPipelineForText2Image`.

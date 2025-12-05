@@ -18,3 +18,7 @@
 ## 2025-12-05 13:21:51
 - User: Streamlit Cloud 安裝時 `tokenizers` 因 Python 3.13 建置失敗。
 - Assistant: 新增 `runtime.txt` 將 Python 版本固定為 3.11（Cloud 支援的預編譯 wheels 可用），並在 README 中說明。
+
+## 2025-12-05 13:27:35
+- User: 仍遇到 `tokenizers` 編譯錯誤（Python 3.13）。
+- Assistant: 將 `runtime.txt` 的版本明確調整為 Streamlit Cloud 官方支援的 `python-3.11.6`，並於 README 更新說明以確保使用 3.11 環境安裝預編譯 wheels。
